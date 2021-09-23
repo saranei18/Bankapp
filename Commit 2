@@ -1,0 +1,307 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+static int user_id;
+
+class User
+{
+
+public:
+    int _id;
+    int balance;
+    string name;
+    string email;
+    int req_money;
+    int req_id;
+    void addAUser();
+    void getdata(string, string, int, int, int, int, int);
+    void showUsers();
+    void update(string, string);
+    void transferMoney();
+    void transferRequest();
+    void close();
+};
+
+// Code to display the data of the
+// data of the object
+// Code to set the value to the object
+void User::getdata(string namee, string eemail, int nb, int flag, int money, int rm, int rid)
+{
+    if (flag)
+    {
+        _id = ++user_id;
+        balance = money;
+        money += nb;
+        balance = money;
+        name = namee;
+        email = eemail;
+        req_id = rid;
+        req_money = rm;
+    }
+    else
+    {
+        _id = ++user_id;
+        balance = money;
+        money -= nb;
+        balance = money;
+        name = namee;
+        email = eemail;
+        req_id = rid;
+        req_money = rm;
+    }
+}
+
+// Sample input 1
+void User::addAUser()
+{
+    string name, email;
+
+    // new name
+    name = "geek2";
+    email = "geek2@gmail.com";
+
+    // call update function with new values
+    getdata(name, email, 0, 0, 5000, 0, 0);
+
+    fstream obj1;
+
+    obj1.open("usernew.txt", ios::out | ios::app);
+
+    obj1.write((char *)this, sizeof(User));
+}
+// from, to
+void User::update(string oname, string nname)
+{
+    // code to update and modify
+    // the content of the binary file
+    int pos, flag = 0;
+
+    // rno=9
+    fstream fs, ss;
+    fs.open("usernew.txt", ios::in | ios::binary | ios::out);
+
+    while (!fs.eof())
+    {
+        // storing the position of
+        // current file pointeri.e. at
+        // the end of previously read record
+        pos = fs.tellg();
+
+        fs.read((char *)this, sizeof(User));
+        if (fs)
+        {
+
+            // comparing the roll no with that
+            // of the entered roll number
+            if (oname == name)
+            {
+
+                // setting the new (modified )
+                // data of the object or new record
+                getdata(this->name, this->email, 1000, 0, this->balance, this->req_money, this->req_id);
+
+                // placing the put(writing) pointer
+                // at the starting of the record
+                fs.seekp(pos);
+
+                // writing the object to the file
+                fs.write((char *)this, sizeof(User));
+
+                // display the data
+                break;
+            }
+        }
+    }
+
+    ss.open("usernew.txt", ios::in | ios::binary | ios::out);
+
+    while (!ss.eof())
+    {
+        // storing the position of
+        // current file pointeri.e. at
+        // the end of previously read record
+        pos = ss.tellg();
+
+        ss.read((char *)this, sizeof(User));
+        if (ss)
+        {
+
+            // comparing the roll no with that
+            // of the entered roll number
+            if (nname == name)
+            {
+                flag = 1;
+
+                // setting the new (modified )
+                // data of the object or new record
+                getdata(this->name, this->email, 1000, 1, this->balance, this->req_money, this->req_id);
+
+                // placing the put(writing) pointer
+                // at the starting of the record
+                ss.seekp(pos);
+
+                // writing the object to the file
+                ss.write((char *)this, sizeof(User));
+
+                // display the data
+                break;
+            }
+        }
+    }
+
+    fs.close();
+    ss.close();
+
+    if (flag == 1)
+        cout << "\nrecord successfully modified \n";
+    else
+        cout << "\nrecord not found \n";
+}
+
+void User::transferMoney()
+{
+    string name, nname;
+
+    // roll no to be searched
+    name = "Geekerman1";
+    nname = "geek2";
+
+    // call update function with the new values
+    update(name, nname);
+}
+
+void User::showUsers()
+{
+    ifstream obj1;
+
+    // cout << "THIS :" << email << " end" << endl;
+
+    obj1.open("usernew.txt", ios::in | ios::app);
+
+    // cout << sizeof(obj1);
+
+    obj1.read((char *)this, sizeof(User));
+
+    while (!obj1.eof())
+    {
+        cout << "name : " << this->name << endl;
+        cout << "email : " << this->email << endl;
+        cout << "balance : " << this->balance << endl;
+        cout << "Req M & Req Id : " << this->req_money << "  " << this->req_id << endl
+             << endl;
+        obj1.read((char *)this, sizeof(User));
+    }
+}
+
+// Transfer Request
+void User::transferRequest()
+{
+    fstream ss;
+    int flag = 0;
+
+    string name1, name2;
+    int pos;
+    cout << "Ënter your name : ";
+    cin >> name1;
+    cout << "Enter the nome of the user your request : ";
+    cin >> name2;
+
+    ss.open("usernew.txt", ios::in | ios::binary | ios::out);
+
+    while (!ss.eof())
+    {
+        // storing the position of
+        // current file pointeri.e. at
+        // the end of previously read record
+        pos = ss.tellg();
+
+        ss.read((char *)this, sizeof(User));
+        if (ss)
+        {
+
+            // comparing the roll no with that
+            // of the entered roll number
+            if (name1 == name)
+            {
+                flag = 1;
+
+                // setting the new (modified )
+                // data of the object or new record
+                getdata(this->name, this->email, 1000, 1, this->balance, 1000, this->_id);
+
+                // placing the put(writing) pointer
+                // at the starting of the record
+                ss.seekp(pos);
+
+                // writing the object to the file
+                ss.write((char *)this, sizeof(User));
+
+                // display the data
+                break;
+            }
+        }
+    }
+
+    ss.close();
+}
+
+// Close the Application
+void User::close()
+{
+    cout << endl;
+    cout << "       .........................." << endl;
+    cout << "       :  APPLICATION EXITTING  :" << endl;
+    cout << "       .........................." << endl
+         << endl;
+}
+
+int main()
+{
+    User s1;
+    // // s1.addAUser();
+    // s1.showUsers();
+    // // s1.transferMoney();
+
+    cout << endl;
+    cout << "    ........................................" << endl;
+    cout << "    :  Welcome to UPI Banking Application  :" << endl;
+    cout << "    ........................................" << endl
+         << endl;
+
+    while (true)
+    {
+        int option;
+        cout << "1.ADD A USER" << endl;
+        cout << "2.SHOW USERS" << endl;
+        cout << "3.TRANSER MONEY" << endl;
+        cout << "4.TRANSER REQUEST" << endl;
+        cout << "5.CLOSE THE APPLICATION" << endl;
+        cout << "Enter your choice : ";
+        cin >> option;
+        cout << endl;
+        switch (option)
+        {
+        case 1:
+            s1.addAUser();
+            break;
+        case 2:
+            s1.showUsers();
+            break;
+        case 3:
+            s1.transferMoney();
+            break;
+        case 4:
+            s1.transferRequest();
+            break;
+        case 5:
+            s1.close();
+            return 0;
+        }
+    }
+
+    return 0;
+}
